@@ -36,8 +36,8 @@ static void print_usage(const char* program_name) {
   // clang-format off
   fprintf(stderr, "Usage: %s <command> [arguments]\n", program_name);
   fprintf(stderr, "Commands:\n");
-  fprintf(stderr, "  get [-%%]        Get current brightness (absolute or percentage)\n");
-  fprintf(stderr, "  set <value>      Set brightness to value (integer or percentage)\n");
+  fprintf(stderr, "  get [-%% | -p | --percent]  Get current brightness (absolute or percentage)\n");
+  fprintf(stderr, "  set <value>                 Set brightness to value (integer or percentage)\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Brightness value:\n");
   fprintf(stderr, "  Valid integer values are in the range [400, 50000], inclusive.\n");
@@ -387,7 +387,8 @@ int main(int argc, char* argv[]) {
 
   // <program> get [-%]
   if (!strcmp(argv[1], "get")) {
-    if (argc == 3 && strcmp(argv[2], "-%")) {
+    if (argc == 3 && strcmp(argv[2], "-%") && strcmp(argv[2], "-p") &&
+        strcmp(argv[2], "--percent")) {
       fprintf(stderr, "error: unknown parameter '-%%' for command 'get'.\n");
       print_usage(argv[0]);
       return 1;
