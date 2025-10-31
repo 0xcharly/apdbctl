@@ -287,7 +287,7 @@ static uint32_t to_absolute_brightness(uint8_t percentage) {
  *
  * @retval SUCCESS Brightness value printed successully on standard output.
  * @retval ERR_DEVICE_NOT_FOUND Apple Pro Display XDR brightness control device not found.
- * @retval ERR_HIDAPI_CALL_FAIL Failed to send HID report.
+ * @retval ERR_HIDAPI_CALL_FAIL Failed to retrieve HID feature report.
  */
 static int print_brightness(bool as_percentage_point) {
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
@@ -320,7 +320,7 @@ static int print_brightness(bool as_percentage_point) {
  *
  * @retval SUCCESS Brightness updated successfully.
  * @retval ERR_DEVICE_NOT_FOUND Apple Pro Display XDR brightness control device not found.
- * @retval ERR_HIDAPI_CALL_FAIL Failed to send HID report.
+ * @retval ERR_HIDAPI_CALL_FAIL Failed to send HID feature report.
  */
 static int set_brightness(uint32_t value, bool as_percentage_point) {
   assert((as_percentage_point && value <= 100) ||
