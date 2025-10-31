@@ -351,8 +351,6 @@ static bool parse_brightness_parameter(const char* parameter, uint32_t* value,
 }
 
 int main(int argc, char* argv[]) {
-  const struct hid_api_version* version = hid_version();
-
   // Fail if API version majors differ. Better safe than sending the wrong command to the device.
   if (HID_API_VERSION_MAJOR != hid_version()->major) {
     fprintf(stderr, "This program was built with a different version of hidapi.\n");
