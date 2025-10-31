@@ -13,6 +13,7 @@ CMakeUserPresets.json
 
 # Build directory
 build/
+result
 # Binary
 apdbctl
 

@@ -33,6 +33,7 @@
           cmake
           pkg-config
           hidapi
+          valgrind
         ];
       };
     });
