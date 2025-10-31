@@ -25,14 +25,14 @@ nix build
 # Get current brightness
 apdbctl get
 
-# Set brightness to a specific value (0-100)
-apdbctl set 75
+# Get current brightness as a percentage
+apdbctl get -%
+
+# Set brightness to a specific value (400-50000)
+apdbctl set 10000
 
 # Set brightness using percentage notation
 apdbctl set 50%
-
-# List available displays
-apdbctl list
 ```
 
 ## Requirements
