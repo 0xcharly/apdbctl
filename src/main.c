@@ -277,8 +277,8 @@ static uint32_t to_absolute_brightness(uint8_t percentage) {
  * @param as_percentage_point[in] Whether to print the value as absolute or percentage.
  *
  * @retval 0 Brightness value printed successully on standard output.
- * @retval 2 Apple Pro Display XDR brightness control device not found.
- * @retval 3 Failed to send HID report.
+ * @retval 1 Apple Pro Display XDR brightness control device not found.
+ * @retval 2 Failed to send HID report.
  */
 static int print_brightness(bool as_percentage_point) {
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
@@ -310,39 +310,30 @@ static int print_brightness(bool as_percentage_point) {
  * @param as_percentage_point[in] Whether to interpret `value` as absolute or percentage.
  *
  * @retval 0 Brightness updated successfully.
- * @retval 1 Invalid input.
- * @retval 2 Apple Pro Display XDR brightness control device not found.
- * @retval 3 Failed to send HID report.
+ * @retval 1 Apple Pro Display XDR brightness control device not found.
+ * @retval 2 Failed to send HID report.
  */
 static int set_brightness(uint32_t value, bool as_percentage_point) {
-  if (as_percentage_point && value > 100) {
-    fprintf(stderr, "error: invalid percentage value '%u%%'\n", value);
-    return 1;
-  }
-
-  if (!as_percentage_point && (value < BRIGHTNESS_MIN || value > BRIGHTNESS_MAX)) {
-    fprintf(stderr, "error: invalid absolute brightness value '%u'\n", value);
-    fprintf(stderr, "error: value must be in [%u, %u].\n", BRIGHTNESS_MIN, BRIGHTNESS_MAX);
-    return 1;
-  }
+  assert((as_percentage_point && value > 100) ||
+         (!as_percentage_point && (value < BRIGHTNESS_MIN || value > BRIGHTNESS_MAX)));
 
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
   if (!device) {
     fprintf(stderr, "error: Apple Pro Display XDR brightness control device not found.\n");
-    return 2;
+    return 1;
   }
 
   bool success =
       hid_set_brightness(device, as_percentage_point ? to_absolute_brightness(value) : value);
 
   hid_close(device);
-  return success ? 0 : 3;
+  return success ? 0 : 2;
 }
 
 /**
  * @brief Parses the input string as a brightness value.
  *
- * Brightness value can be either absolute (an integer) or percentage ("50%").
+ * Brightness value can be either absolute (an integer in [400, 50000]) or percentage ("50%").
  *
  * @param parameter[in] The string to parse.
  * @param value[out] The output value, if successful.
@@ -354,14 +345,25 @@ static int set_brightness(uint32_t value, bool as_percentage_point) {
 static bool parse_brightness_parameter(const char* parameter, uint32_t* value,
                                        bool* as_percentage_point) {
   char* last = NULL;
-  *value = strtoul(parameter, &last, /* base= */ 10);
+  unsigned long parsed = strtoul(parameter, &last, /* base= */ 10);
 
-  if (parameter == last || !(*last == '%' && *(last + 1) == '\0') && *value <= 100) {
-    return false;
+  // No digits found.
+  if (parameter == last) return false;
+
+  if (*last == '%' && *(last + 1) == '\0' && parsed <= 100) {
+    *value = parsed;
+    *as_percentage_point = true;
+    return true;
   }
 
-  *as_percentage_point = (*last == '%');
-  return true;
+  if (*last == '\0' && parsed >= BRIGHTNESS_MIN && parsed <= BRIGHTNESS_MAX) {
+    *value = parsed;
+    *as_percentage_point = false;
+    return true;
+  }
+
+  // Any other trailing character.
+  return false;
 }
 
 int main(int argc, char* argv[]) {
@@ -407,9 +409,9 @@ int main(int argc, char* argv[]) {
 
     if (!parse_brightness_parameter(argv[2], &brightness, &as_percentage_point)) {
       fprintf(stderr,
-              "error: invalid brightness value '%s'. Must be an integer or valid percentage.\n",
-              argv[2]);
-      print_usage(argv[0]);
+              "error: invalid brightness value '%s'. Must be an valid integer (in [%u, %u]) or "
+              "percentage [0%%, 100%%].\n",
+              argv[2], BRIGHTNESS_MIN, BRIGHTNESS_MAX);
       return 1;
     }
 
