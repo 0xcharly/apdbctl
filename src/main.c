@@ -364,7 +364,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (argc < 2 || argc > 3) {
-    fprintf(stderr, "error: invalid parameters");
+    fprintf(stderr, "error: invalid parameters\n");
     print_usage(argv[0]);
     return 1;
   }
