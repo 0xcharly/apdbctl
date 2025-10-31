@@ -29,6 +29,12 @@
 #error "BRIGHTNESS_MIN must be strictly less than BRIGHTNESS_MAX"
 #endif
 
+#define SUCCESS 0
+#define ERR_INVALID_ARGUMENT 1
+#define ERR_DEVICE_NOT_FOUND 2
+#define ERR_HIDAPI_CALL_FAIL 3
+#define ERR_INVALID_PRECONDITION 4
+
 /**
  * @brief Prints usage on standard error.
  *
@@ -278,22 +284,22 @@ static uint32_t to_absolute_brightness(uint8_t percentage) {
  *
  * @param as_percentage_point[in] Whether to print the value as absolute or percentage.
  *
- * @retval 0 Brightness value printed successully on standard output.
- * @retval 1 Apple Pro Display XDR brightness control device not found.
- * @retval 2 Failed to send HID report.
+ * @retval SUCCESS Brightness value printed successully on standard output.
+ * @retval ERR_DEVICE_NOT_FOUND Apple Pro Display XDR brightness control device not found.
+ * @retval ERR_HIDAPI_CALL_FAIL Failed to send HID report.
  */
 static int print_brightness(bool as_percentage_point) {
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
   if (!device) {
     fprintf(stderr, "error: Apple Pro Display XDR brightness control device not found.\n");
-    return 1;
+    return ERR_DEVICE_NOT_FOUND;
   }
 
   int32_t brightness = hid_get_brightness(device);
   hid_close(device);
 
   if (brightness < 0) {
-    return 2;
+    return ERR_HIDAPI_CALL_FAIL;
   }
 
   if (as_percentage_point) {
@@ -302,7 +308,7 @@ static int print_brightness(bool as_percentage_point) {
     printf("%u\n", brightness);
   }
 
-  return 0;
+  return SUCCESS;
 }
 
 /**
@@ -311,9 +317,9 @@ static int print_brightness(bool as_percentage_point) {
  * @param value[in] The integer value of the requested brightness target.
  * @param as_percentage_point[in] Whether to interpret `value` as absolute or percentage.
  *
- * @retval 0 Brightness updated successfully.
- * @retval 1 Apple Pro Display XDR brightness control device not found.
- * @retval 2 Failed to send HID report.
+ * @retval SUCCESS Brightness updated successfully.
+ * @retval ERR_DEVICE_NOT_FOUND Apple Pro Display XDR brightness control device not found.
+ * @retval ERR_HIDAPI_CALL_FAIL Failed to send HID report.
  */
 static int set_brightness(uint32_t value, bool as_percentage_point) {
   assert((as_percentage_point && value > 100) ||
@@ -322,14 +328,14 @@ static int set_brightness(uint32_t value, bool as_percentage_point) {
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
   if (!device) {
     fprintf(stderr, "error: Apple Pro Display XDR brightness control device not found.\n");
-    return 1;
+    return ERR_DEVICE_NOT_FOUND;
   }
 
   bool success =
       hid_set_brightness(device, as_percentage_point ? to_absolute_brightness(value) : value);
 
   hid_close(device);
-  return success ? 0 : 2;
+  return success ? SUCCESS : ERR_HIDAPI_CALL_FAIL;
 }
 
 /**
@@ -379,19 +385,19 @@ int main(int argc, char* argv[]) {
   // Fail if API version majors differ. Better safe than sending the wrong command to the device.
   if (HID_API_VERSION_MAJOR != hid_version()->major) {
     fprintf(stderr, "This program was built with a different version of hidapi.\n");
-    return 1;
+    return ERR_INVALID_PRECONDITION;
   }
 
   if (argc < 2 || argc > 3) {
     fprintf(stderr, "error: invalid parameters\n");
     print_usage(argv[0]);
-    return 1;
+    return ERR_INVALID_ARGUMENT;
   }
 
   if (argc == 2 &&
       (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h") || !strcmp(argv[1], "help"))) {
     print_usage(argv[0]);
-    return 0;
+    return SUCCESS;
   }
 
   // <program> get [-%]
@@ -400,7 +406,7 @@ int main(int argc, char* argv[]) {
         strcmp(argv[2], "--percent")) {
       fprintf(stderr, "error: unknown parameter '-%%' for command 'get'.\n");
       print_usage(argv[0]);
-      return 1;
+      return ERR_INVALID_ARGUMENT;
     }
     bool as_percentage_point = argc == 3;
     return print_brightness(as_percentage_point);
@@ -411,7 +417,7 @@ int main(int argc, char* argv[]) {
     if (argc < 3) {
       fprintf(stderr, "error: 'set' command requires a value argument.\n");
       print_usage(argv[0]);
-      return 1;
+      return ERR_INVALID_ARGUMENT;
     }
 
     uint32_t brightness;
@@ -422,7 +428,7 @@ int main(int argc, char* argv[]) {
               "error: invalid brightness value '%s'. Must be an valid integer (in [%u, %u]) or "
               "percentage [0%%, 100%%].\n",
               argv[2], BRIGHTNESS_MIN, BRIGHTNESS_MAX);
-      return 1;
+      return ERR_INVALID_ARGUMENT;
     }
 
     return set_brightness(brightness, as_percentage_point);
@@ -430,5 +436,5 @@ int main(int argc, char* argv[]) {
 
   fprintf(stderr, "error: unknown command '%s'\n", argv[1]);
   print_usage(argv[0]);
-  return 1;
+  return ERR_INVALID_ARGUMENT;
 }
