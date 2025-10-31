@@ -358,7 +358,6 @@ static bool parse_brightness_parameter(const char* parameter, uint32_t* value,
   unsigned long parsed = strtoul(parameter, &last, /* base= */ 10);
 
   if (parsed == ULONG_MAX && errno) {
-    perror("strtoul");
     return false;
   }
 
