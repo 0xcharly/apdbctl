@@ -37,11 +37,11 @@ apdbctl set 50%
 
 ## Error codes
 
-- 0 on success
-- 1 if the input (command line argument) is invalid
-- 2 if the Apple Pro Display XDR brightness control device could not be found
-- 3 if HID calls fail
-- 4 if the compiled and runtime versions of the HID API mismatch
+- `0` on success
+- `1` if the input (command line argument) is invalid
+- `2` if the Apple Pro Display XDR brightness control device could not be found
+- `3` if HID calls fail
+- `4` if the compiled and runtime versions of the HID API mismatch
 
 ## Requirements
 
@@ -55,7 +55,7 @@ The Apple Pro Display XDR advertises 4 different HID devices. Only one of them i
 
 ### HID Report Descriptor
 
-From the [USB Descriptor and Request Parser](https://eleccelerator.com/usbdescreqparser/) online tool:
+Output from the [USB Descriptor and Request Parser](https://eleccelerator.com/usbdescreqparser/) online tool:
 
 ```
 Report Descriptor: (79 bytes)
