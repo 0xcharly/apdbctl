@@ -31,6 +31,8 @@ project(apdbctl VERSION ${VERSION} LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+set(DISTRIBUTOR "Unset" CACHE STRING "Distributor")
+
 # Find hidapi library
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(HIDAPI REQUIRED hidapi-hidraw)
@@ -38,6 +40,12 @@ pkg_check_modules(HIDAPI REQUIRED hidapi-hidraw)
 # Add executable
 add_executable(apdbctl
     src/main.c
+)
+target_compile_definitions(apdbctl PRIVATE
+    PROJECT_NAME="${PROJECT_NAME}"
+    VERSION="${VERSION}"
+    GIT_REVISION="${GIT_REVISION}"
+    DISTRIBUTOR="${DISTRIBUTOR}"
 )
 
 # Link against hidapi

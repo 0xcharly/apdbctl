@@ -43,6 +43,8 @@
  */
 static void print_usage(const char* program_name) {
   // clang-format off
+  fprintf(stderr, "%s v%s, revision %s, distributed by: %s\n", PROJECT_NAME, VERSION, GIT_REVISION, DISTRIBUTOR);
+  fprintf(stderr, "\n");
   fprintf(stderr, "Usage: %s <command> [arguments]\n", program_name);
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  get [-%% | -p | --percent]  Get current brightness (absolute or percentage)\n");
