@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <endian.h>
 #include <hidapi.h>
 #include <stdbool.h>
 #include <stdint.h>
