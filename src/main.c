@@ -28,12 +28,12 @@ static void print_usage(const char* program_name) {
   // clang-format off
   fprintf(stderr, "Usage: %s <command> [arguments]\n", program_name);
   fprintf(stderr, "Commands:\n");
-  fprintf(stderr, "  get [-\%]        Get current brightness\n");
+  fprintf(stderr, "  get [-%%]        Get current brightness\n");
   fprintf(stderr, "  set <value>      Set brightness to value (integer or percentage)\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Brightness value:\n");
   fprintf(stderr, "  Valid integer values are in the range [400, 50000], inclusive.\n");
-  fprintf(stderr, "  Percentage values are also accepted, e.g. \"50\%\".\n");
+  fprintf(stderr, "  Percentage values are also accepted, e.g. \"50%%\".\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Examples:\n");
   fprintf(stderr, "  %s set 400\n", program_name);
@@ -287,7 +287,7 @@ static int print_brightness(bool as_percentage_point) {
   }
 
   if (as_percentage_point) {
-    printf("%u%\n", to_percent_brightness(brightness));
+    printf("%u%%\n", to_percent_brightness(brightness));
   } else {
     printf("%u\n", brightness);
   }
@@ -308,7 +308,7 @@ static int print_brightness(bool as_percentage_point) {
  */
 static int set_brightness(uint32_t value, bool as_percentage_point) {
   if (as_percentage_point && (value < 0 || value > 100)) {
-    fprintf(stderr, "error: invalid percentage value '%u\%'\n", value);
+    fprintf(stderr, "error: invalid percentage value '%u%%'\n", value);
     return 1;
   } else if (!as_percentage_point && (value < BRIGHTNESS_MIN || value > BRIGHTNESS_MAX)) {
     fprintf(stderr, "error: invalid absolute brightness value '%u'\n", value);
@@ -377,7 +377,7 @@ int main(int argc, char* argv[]) {
   // <program> get [-%]
   if (!strcmp(argv[1], "get")) {
     if (argc == 3 && strcmp(argv[2], "-%")) {
-      fprintf(stderr, "error: unknown parameter '-\%' for command 'get'.\n");
+      fprintf(stderr, "error: unknown parameter '-%%' for command 'get'.\n");
       print_usage(argv[0]);
       return 1;
     }
