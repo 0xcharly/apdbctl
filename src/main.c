@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <errno.h>
 #include <hidapi.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -345,7 +347,14 @@ static int set_brightness(uint32_t value, bool as_percentage_point) {
 static bool parse_brightness_parameter(const char* parameter, uint32_t* value,
                                        bool* as_percentage_point) {
   char* last = NULL;
+
+  errno = 0;
   unsigned long parsed = strtoul(parameter, &last, /* base= */ 10);
+
+  if (parsed == ULONG_MAX && errno) {
+    perror("strtoul");
+    return false;
+  }
 
   // No digits found.
   if (parameter == last) return false;
