@@ -318,10 +318,11 @@ static int set_brightness(uint32_t value, bool as_percentage_point) {
   if (as_percentage_point && (value < 0 || value > 100)) {
     fprintf(stderr, "error: invalid percentage value '%u%%'\n", value);
     return 1;
-  } else if (!as_percentage_point && (value < BRIGHTNESS_MIN || value > BRIGHTNESS_MAX)) {
+  }
+
+  if (!as_percentage_point && (value < BRIGHTNESS_MIN || value > BRIGHTNESS_MAX)) {
     fprintf(stderr, "error: invalid absolute brightness value '%u'\n", value);
-    fprintf(stderr, "error: value must be in [%u, %u] inclusive.\n", BRIGHTNESS_MIN,
-            BRIGHTNESS_MAX);
+    fprintf(stderr, "error: value must be in [%u, %u].\n", BRIGHTNESS_MIN, BRIGHTNESS_MAX);
     return 1;
   }
 
