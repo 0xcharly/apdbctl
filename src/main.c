@@ -315,7 +315,7 @@ static int print_brightness(bool as_percentage_point) {
  * @retval 3 Failed to send HID report.
  */
 static int set_brightness(uint32_t value, bool as_percentage_point) {
-  if (as_percentage_point && (value < 0 || value > 100)) {
+  if (as_percentage_point && value > 100) {
     fprintf(stderr, "error: invalid percentage value '%u%%'\n", value);
     return 1;
   }
