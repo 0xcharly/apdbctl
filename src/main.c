@@ -425,7 +425,7 @@ int main(int argc, char* argv[]) {
 
     if (!parse_brightness_parameter(argv[2], &brightness, &as_percentage_point)) {
       fprintf(stderr,
-              "error: invalid brightness value '%s'. Must be an valid integer (in [%u, %u]) or "
+              "error: invalid brightness value '%s'. Must be a valid integer (in [%u, %u]) or "
               "percentage [0%%, 100%%].\n",
               argv[2], BRIGHTNESS_MIN, BRIGHTNESS_MAX);
       return ERR_INVALID_ARGUMENT;
