@@ -9,7 +9,7 @@
     self,
     nixpkgs,
     ...
-  } @ inputs: let
+  }: let
     forAllSystems = fn:
       nixpkgs.lib.genAttrs nixpkgs.lib.platforms.linux (
         system: fn nixpkgs.legacyPackages.${system}
@@ -18,32 +18,18 @@
     formatter = forAllSystems (pkgs: pkgs.alejandra);
 
     packages = forAllSystems (pkgs: {
-      default = pkgs.stdenv.mkDerivation {
-        pname = "apdbctl";
-        version = "0.1.0";
-
-        src = ./.;
-
-        nativeBuildInputs = with pkgs; [
-          cmake
-          pkg-config
-        ];
-
-        buildInputs = with pkgs; [
-          hidapi
-        ];
-
-        meta = with pkgs.lib; {
-          description = "Apple Pro Display XDR Brightness control";
-          license = licenses.mit;
-          platforms = platforms.unix;
-        };
+      default = pkgs.callPackage ./nix {
+        rev = self.rev or self.dirtyRev;
+        stdenv = pkgs.clangStdenv;
       };
     });
 
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {
         buildInputs = with pkgs; [
+          alejandra
+          nixd
+          clang
           cmake
           pkg-config
           hidapi

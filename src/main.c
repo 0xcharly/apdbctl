@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+// clang-format: off
 void print_usage(const char *program_name) {
   fprintf(stderr, "Usage: %s <command> [arguments]\n", program_name);
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  get              Get current brightness\n");
-  fprintf(
-      stderr,
-      "  set <value>      Set brightness to value (integer or percentage)\n");
+  fprintf(stderr, "  set <value>      Set brightness to value (integer or percentage)\n");
   fprintf(stderr, "  list             List available displays\n");
 }
+// clang-format: on
 
 int parse_arguments(int argc, char *argv[]) {
   if (argc < 2) {
