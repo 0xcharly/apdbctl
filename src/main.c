@@ -280,6 +280,8 @@ static int print_brightness(bool as_percentage_point) {
   }
 
   uint32_t brightness = hid_get_brightness(device);
+  hid_close(device);
+  
   if (brightness < 0) {
     return 3;
   }
@@ -290,7 +292,6 @@ static int print_brightness(bool as_percentage_point) {
     printf("%u\n", brightness);
   }
 
-  hid_close(device);
   return 0;
 }
 
