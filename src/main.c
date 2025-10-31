@@ -10,6 +10,7 @@
 
 #if defined(__APPLE__)
 #include <libkern/OSByteOrder.h>
+#define le16toh(x) OSSwapLittleToHostInt16(x)
 #define le32toh(x) OSSwapLittleToHostInt32(x)
 #define htole32(x) OSSwapHostToLittleInt32(x)
 #else
@@ -137,11 +138,11 @@ static bool hid_is_apple_pro_display_xdr_brightness_control_device(hid_device* d
     return false;
   }
 
-  return descriptor.usage_page == BRIGHTNESS_REPORT_PAGE &&
-         descriptor.report_usage == BRIGHTNESS_REPORT_USAGE &&
-         descriptor.report_id >> 8 == BRIGHTNESS_REPORT_ID &&
-         descriptor.logical_minimum == BRIGHTNESS_MIN &&
-         descriptor.logical_maximum == BRIGHTNESS_MAX;
+  return le16toh(descriptor.usage_page) == BRIGHTNESS_REPORT_PAGE &&
+         le16toh(descriptor.report_usage) == BRIGHTNESS_REPORT_USAGE &&
+         (le16toh(descriptor.report_id) >> 8 & 0xff) == BRIGHTNESS_REPORT_ID &&
+         le16toh(descriptor.logical_minimum) == BRIGHTNESS_MIN &&
+         le32toh(descriptor.logical_maximum) == BRIGHTNESS_MAX;
 }
 
 /**
