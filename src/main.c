@@ -123,7 +123,7 @@ static bool hid_is_apple_pro_display_xdr_brightness_control_device(hid_device* d
 
   return descriptor.usage_page == BRIGHTNESS_REPORT_PAGE &&
          descriptor.report_usage == BRIGHTNESS_REPORT_USAGE &&
-         descriptor.report_id == (BRIGHTNESS_REPORT_ID << 8 | 0x85) &&
+         descriptor.report_id >> 8 == BRIGHTNESS_REPORT_ID &&
          descriptor.logical_minimum == BRIGHTNESS_MIN &&
          descriptor.logical_maximum == BRIGHTNESS_MAX;
 }
