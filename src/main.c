@@ -46,7 +46,7 @@ static void print_usage(const char* program_name) {
   fprintf(stderr, "Usage: %s <command> [arguments]\n", program_name);
   fprintf(stderr, "Commands:\n");
   fprintf(stderr, "  get [-%% | -p | --percent]  Get current brightness (absolute or percentage)\n");
-  fprintf(stderr, "  set <value>                 Set brightness to value (integer or percentage)\n");
+  fprintf(stderr, "  set <value>                Set brightness to value (integer or percentage)\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Brightness value:\n");
   fprintf(stderr, "  Valid integer values are in the range [400, 50000], inclusive.\n");
