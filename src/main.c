@@ -322,7 +322,7 @@ static int print_brightness(bool as_percentage_point) {
  * @retval ERR_HIDAPI_CALL_FAIL Failed to send HID report.
  */
 static int set_brightness(uint32_t value, bool as_percentage_point) {
-  assert((as_percentage_point && value > 100) ||
+  assert((as_percentage_point && value <= 100) ||
          (!as_percentage_point && value >= BRIGHTNESS_MIN && value <= BRIGHTNESS_MAX));
 
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
