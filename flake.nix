@@ -3,44 +3,52 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
-        packages.default = pkgs.stdenv.mkDerivation {
-          pname = "apdbctl";
-          version = "0.1.0";
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  } @ inputs: let
+    forAllSystems = fn:
+      nixpkgs.lib.genAttrs nixpkgs.lib.platforms.linux (
+        system: fn nixpkgs.legacyPackages.${system}
+      );
+  in {
+    formatter = forAllSystems (pkgs: pkgs.alejandra);
 
-          src = ./.;
+    packages = forAllSystems (pkgs: {
+      default = pkgs.stdenv.mkDerivation {
+        pname = "apdbctl";
+        version = "0.1.0";
 
-          nativeBuildInputs = with pkgs; [
-            cmake
-            pkg-config
-          ];
+        src = ./.;
 
-          buildInputs = with pkgs; [
-            hidapi
-          ];
+        nativeBuildInputs = with pkgs; [
+          cmake
+          pkg-config
+        ];
 
-          meta = with pkgs.lib; {
-            description = "Apple Pro Display XDR Brightness control";
-            license = licenses.mit;
-            platforms = platforms.unix;
-          };
+        buildInputs = with pkgs; [
+          hidapi
+        ];
+
+        meta = with pkgs.lib; {
+          description = "Apple Pro Display XDR Brightness control";
+          license = licenses.mit;
+          platforms = platforms.unix;
         };
+      };
+    });
 
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            cmake
-            pkg-config
-            hidapi
-          ];
-        };
-      }
-    );
+    devShells = forAllSystems (pkgs: {
+      default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          cmake
+          pkg-config
+          hidapi
+        ];
+      };
+    });
+  };
 }
