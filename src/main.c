@@ -10,9 +10,9 @@
 
 #if defined(__APPLE__)
 #include <libkern/OSByteOrder.h>
+#define htole32(x) OSSwapHostToLittleInt32(x)
 #define le16toh(x) OSSwapLittleToHostInt16(x)
 #define le32toh(x) OSSwapLittleToHostInt32(x)
-#define htole32(x) OSSwapHostToLittleInt32(x)
 #else
 #include <endian.h>
 #endif
