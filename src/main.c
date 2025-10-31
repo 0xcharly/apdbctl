@@ -36,7 +36,7 @@ static void print_usage(const char* program_name) {
   // clang-format off
   fprintf(stderr, "Usage: %s <command> [arguments]\n", program_name);
   fprintf(stderr, "Commands:\n");
-  fprintf(stderr, "  get [-%%]        Get current brightness\n");
+  fprintf(stderr, "  get [-%%]        Get current brightness (absolute or percentage)\n");
   fprintf(stderr, "  set <value>      Set brightness to value (integer or percentage)\n");
   fprintf(stderr, "\n");
   fprintf(stderr, "Brightness value:\n");
