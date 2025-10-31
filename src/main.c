@@ -352,10 +352,10 @@ static int set_brightness(uint32_t value, bool as_percentage_point) {
  */
 static bool parse_brightness_parameter(const char* parameter, uint32_t* value,
                                        bool* as_percentage_point) {
-  char* last;
+  char* last = NULL;
   *value = strtoul(parameter, &last, /* base= */ 10);
 
-  if (parameter == last || !(*last == '%' && *(last + 1) == '\0') && *value >= 0 && *value <= 100) {
+  if (parameter == last || !(*last == '%' && *(last + 1) == '\0') && *value <= 100) {
     return false;
   }
 
