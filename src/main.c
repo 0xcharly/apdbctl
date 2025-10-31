@@ -180,7 +180,7 @@ struct __attribute__((packed)) brightness_feature_report {
  *
  * @param device[in] The HID device to fetch the report from.
  *
- * @retval >=0 The absolute brightness value otherwise.
+ * @retval >=0 The absolute brightness value.
  * @retval -1 Failed to fetch HID report.
  */
 static int32_t hid_get_brightness(hid_device* device) {
