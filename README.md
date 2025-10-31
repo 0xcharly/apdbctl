@@ -1,6 +1,6 @@
 # apdbctl
 
-Apple Pro Display XDR Brightness control
+Apple Pro Display XDR Brightness control.
 
 ## Build
 
@@ -35,6 +35,14 @@ apdbctl set 10000
 apdbctl set 50%
 ```
 
+## Error codes
+
+- 0 on success
+- 1 if the input (command line argument) is invalid
+- 2 if the Apple Pro Display XDR brightness control device could not be found
+- 3 if HID calls fail
+- 4 if the compiled and runtime versions of the HID API mismatch
+
 ## Requirements
 
 - CMake 3.19 or later
@@ -46,6 +54,8 @@ apdbctl set 50%
 The Apple Pro Display XDR advertises 4 different HID devices. Only one of them is capable of controlling the brightness.
 
 ### HID Report Descriptor
+
+From the [USB Descriptor and Request Parser](https://eleccelerator.com/usbdescreqparser/) online tool:
 
 ```
 Report Descriptor: (79 bytes)
@@ -82,3 +92,37 @@ Report Descriptor: (79 bytes)
 0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 0xC0,              // End Collection
 ```
+
+### HID Feature Report
+
+The feature report for this device is 7 bytes:
+
+```
+struct brightness_feature_report {
+  uint8_t report_id;
+  uint32_t brightness;
+  uint16_t padding;
+};
+```
+
+- `report_id` is `0x01` for brightness control.
+- `brightness` is a value between `0x0190` (400) and `0xc350` (50,000) encoded with the least significant byte first (little-endian).
+- `padding` is unused.
+
+For example, the following feature report sets the brightness to the minimum value possible (400):
+
+```
+[ 0x01, 0x90, 0x01, 0x00, 0x00, 0x00, 0x00 ]
+```
+
+The following feature report sets the brightness to 100%:
+
+```
+[ 0x01, 0x50, 0xc3, 0x00, 0x00, 0x00, 0x00 ]
+```
+
+## Credits
+
+Special thanks to [Julius Zint (@juliuszint)](https://github.com/juliuszint) for his equivalent [asdbctl](https://github.com/juliuszint/asdbctl) tool for Apple Studio Display monitors, which was key in reverse engineering the protocol for the Apple Pro Display XDR.
+
+[acdcontrol](https://github.com/yhaenggi/acdcontrol) is an other project that provides brightness control for Apple Pro Display XDR.
