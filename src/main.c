@@ -149,6 +149,10 @@ static hid_device* hid_open_apple_pro_display_xdr_brightness_control_device() {
     }
 
     hid_device* device = hid_open_path(it->path);
+    if (!device) {
+      fprintf(stderr, "error: failed to open device: %s\n", it->path);
+      continue;
+    }
     if (!hid_is_apple_pro_display_xdr_brightness_control_device(device)) {
       hid_close(device);
       continue;
