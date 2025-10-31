@@ -219,10 +219,10 @@ static bool hid_set_brightness(hid_device* device, uint32_t brightness) {
 
   if (hid_send_feature_report(device, (unsigned char*)&report, sizeof(report)) < 0) {
     fprintf(stderr, "error: failed to send feature report: %ls\n", hid_error(device));
-    return -1;
+    return false;
   }
 
-  return 0;
+  return true;
 }
 
 /**
