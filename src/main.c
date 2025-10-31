@@ -1,11 +1,18 @@
 #include <assert.h>
-#include <endian.h>
 #include <hidapi.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(__APPLE__)
+#include <libkern/OSByteOrder.h>
+#define le32toh(x) OSSwapLittleToHostInt32(x)
+#define htole32(x) OSSwapHostToLittleInt32(x)
+#else
+#include <endian.h>
+#endif
 
 #define APPLE_INC 0x05ac
 #define PRO_DISPLAY_XDR 0x9243
