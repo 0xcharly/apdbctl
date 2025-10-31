@@ -284,14 +284,14 @@ static int print_brightness(bool as_percentage_point) {
   hid_device* device = hid_open_apple_pro_display_xdr_brightness_control_device();
   if (!device) {
     fprintf(stderr, "error: Apple Pro Display XDR brightness control device not found.\n");
-    return 2;
+    return 1;
   }
 
   int32_t brightness = hid_get_brightness(device);
   hid_close(device);
 
   if (brightness < 0) {
-    return 3;
+    return 2;
   }
 
   if (as_percentage_point) {
